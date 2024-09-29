@@ -1,7 +1,21 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from 'elysia'
+import { swagger } from '@elysiajs/swagger'
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+import { note } from './note'
+import { user } from './user'
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+
+const app = new Elysia()
+    .use(swagger())
+    
+    .use(note) 
+    .use(user)
+    .onError(({ error, code }) => { 
+      if (code === 'NOT_FOUND') return 'Not Found :('
+
+        console.error(error) 
+    }) 
+    .get(
+        '/note/:index',{}
+    )
+    .listen(3000)
